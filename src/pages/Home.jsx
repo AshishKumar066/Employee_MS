@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+
 import {
     FaUsers,
     FaUserCheck,
@@ -7,213 +8,466 @@ import {
     FaPlus,
     FaArrowRight,
 } from "react-icons/fa";
-import StateCard from "../components/StateCard"
+
+import { useEffect, useState } from "react";
+
+import StatCard from "../components/StateCard";
+
+import { getEmployees } from "../data/employeeStorage";
+
 
 function Home() {
-    const recentEmployees = [
-        {
-            id: 1,
-            name: "Ashish Kumar",
-            department: "IT",
-            position: "Java Developer",
-            status: "Active",
-        },
-        {
-            id: 2,
-            name: "Priya Sharma",
-            department: "HR",
-            position: "HR Executive",
-            status: "Active",
-        },
-        {
-            id: 3,
-            name: "Rahul Singh",
-            department: "Finance",
-            position: "Accountant",
-            status: "On Leave",
-        },
-        {
-            id: 4,
-            name: "Amit Verma",
-            department: "Sales",
-            position: "Sales Executive",
-            status: "Active",
-        },
+
+    // Employee State
+   
+    const [employees, setEmployees] = useState([]);
+
+    // Load Employees
+
+    useEffect(() => {
+
+        const data = getEmployees();
+
+        setEmployees(data);
+
+    }, []);
+
+    // Dynamic Statistics
+   
+    // Total Employees
+
+    const totalEmployees = employees.length;
+
+
+    // Active Employees
+
+    const activeEmployees = employees.filter(
+        (employee) =>
+            employee.status === "Active"
+    ).length;
+
+
+    // On Leave Employees
+
+    const onLeaveEmployees = employees.filter(
+        (employee) =>
+            employee.status === "On Leave"
+    ).length;
+
+
+    // Inactive Employees
+
+    const inactiveEmployees = employees.filter(
+        (employee) =>
+            employee.status === "Inactive"
+    ).length;
+
+    // Unique Departments
+   
+    const departments = [
+        ...new Set(
+            employees.map(
+                (employee) => employee.department
+            )
+        ),
     ];
 
+
+    const totalDepartments =
+        departments.length;
+
+    // Recent Employees
+    
+    const recentEmployees = [...employees]
+        .sort(
+            (a, b) =>
+                new Date(b.joiningDate) -
+                new Date(a.joiningDate)
+        )
+        .slice(0, 4);
+
+
     return (
+
         <main className="page">
 
-            {/* Hero Section */}
-
             <section className="container hero-section">
+
                 <div className="hero-content">
+
                     <p className="hero-small-title">
                         Employee Management System
                     </p>
 
+
                     <h1>
+
                         Manage Your Employees
+
                         <br />
-                        <span>Efficiently & Easily</span>
+
+                        <span>
+                            Efficiently & Easily
+                        </span>
+
                     </h1>
 
+
                     <p className="hero-description">
-                        Manage employee information, departments and workforce
+
+                        Manage employee information,
+                        departments and workforce
                         status from one simple platform.
+
                     </p>
 
+
                     <div className="hero-buttons">
-                        <Link to="/employees/add" className="btn-green">
-                            <FaPlus /> Add Employee
+
+                        <Link
+                            to="/employees/add"
+                            className="btn-green"
+                        >
+
+                            <FaPlus />
+
+                            Add Employee
+
                         </Link>
 
-                        <Link to="/employees" className="btn-outline">
+                        <Link
+                            to="/employees"
+                            className="btn-outline"
+                        >
+
                             View Employees
+
                             <FaArrowRight />
+
                         </Link>
+
                     </div>
+
                 </div>
+
 
                 <div className="hero-icon">
+
                     👥
+
                 </div>
+
             </section>
 
-            {/* Statistics */}
-
             <section className="container">
+
                 <div className="stats-container">
 
-                    <StateCard
+                    <StatCard
                         title="Total Employees"
-                        value="52"
+                        value={totalEmployees}
                         icon={<FaUsers />}
                     />
 
-                    <StateCard
+                    <StatCard
                         title="Active Employees"
-                        value="45"
+                        value={activeEmployees}
                         icon={<FaUserCheck />}
                     />
 
-                    <StateCard
+
+                    {/* Departments */}
+
+                    <StatCard
                         title="Departments"
-                        value="6"
+                        value={totalDepartments}
                         icon={<FaBuilding />}
                     />
 
-                    <StateCard
+                    <StatCard
                         title="On Leave"
-                        value="7"
+                        value={onLeaveEmployees}
                         icon={<FaUserClock />}
                     />
-
                 </div>
-            </section>
 
-            {/* Recent Employees */}
+            </section>
 
             <section className="container recent-section">
 
+
                 <div className="section-header">
+
                     <div>
-                        <h2>Recent Employees</h2>
-                        <p>Recently added employees</p>
+
+                        <h2>
+                            Recent Employees
+                        </h2>
+
+                        <p>
+                            Recently joined employees
+                        </p>
+
                     </div>
 
-                    <Link to="/employees" className="view-all">
-                        View All <FaArrowRight />
+                    <Link
+                        to="/employees"
+                        className="view-all"
+                    >
+
+                        View All
+
+                        <FaArrowRight />
                     </Link>
                 </div>
 
                 <div className="employee-table-wrapper">
 
-                    <table className="employee-table">
 
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Department</th>
-                                <th>Position</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
+                    {recentEmployees.length > 0 ? (
 
-                        <tbody>
-                            {recentEmployees.map((employee) => (
-                                <tr key={employee.id}>
+                        <table className="employee-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Employee
+                                    </th>
 
-                                    <td>
-                                        <div className="employee-name">
-                                            <div className="employee-avatar">
-                                                {employee.name.charAt(0)}
-                                            </div>
+                                    <th>
+                                        Department
+                                    </th>
 
-                                            <span>{employee.name}</span>
-                                        </div>
-                                    </td>
+                                    <th>
+                                        Position
+                                    </th>
 
-                                    <td>{employee.department}</td>
-
-                                    <td>{employee.position}</td>
-
-                                    <td>
-                                        {employee.status === "Active" ? (
-                                            <span className="status-active">
-                                                Active
-                                            </span>
-                                        ) : (
-                                            <span className="status-leave">
-                                                On Leave
-                                            </span>
-                                        )}
-                                    </td>
+                                    <th>
+                                        Status
+                                    </th>
 
                                 </tr>
-                            ))}
-                        </tbody>
 
-                    </table>
+                            </thead>
+
+
+                            <tbody>
+
+                                {recentEmployees.map(
+                                    (employee) => (
+
+                                        <tr
+                                            key={employee.id}
+                                        >
+
+
+                                            {/* Employee */}
+
+                                            <td>
+
+                                                <div className="employee-name">
+
+
+                                                    <div className="employee-avatar">
+
+                                                        {employee.name
+                                                            .charAt(0)
+                                                            .toUpperCase()}
+
+                                                    </div>
+
+
+                                                    <span>
+
+                                                        {employee.name}
+
+                                                    </span>
+
+                                                </div>
+
+                                            </td>
+
+
+
+                                            {/* Department */}
+
+                                            <td>
+
+                                                {employee.department}
+
+                                            </td>
+
+
+
+                                            {/* Position */}
+
+                                            <td>
+
+                                                {employee.position}
+
+                                            </td>
+
+
+
+                                            {/* Status */}
+
+                                            <td>
+
+
+                                                {employee.status ===
+                                                    "Active" ? (
+
+                                                    <span className="status-active">
+
+                                                        Active
+
+                                                    </span>
+
+                                                ) : employee.status ===
+                                                    "On Leave" ? (
+
+                                                    <span className="status-leave">
+
+                                                        On Leave
+
+                                                    </span>
+
+                                                ) : (
+
+                                                    <span className="status-inactive">
+
+                                                        Inactive
+
+                                                    </span>
+
+                                                )}
+
+
+                                            </td>
+
+
+                                        </tr>
+
+                                    )
+                                )}
+
+                            </tbody>
+
+
+                        </table>
+
+                    ) : (
+
+                        <div className="no-recent-employees">
+
+                            No employees available.
+
+                        </div>
+
+                    )}
+
 
                 </div>
+
             </section>
 
-            {/* Quick Actions */}
+
+
+            {/* =================================
+          Quick Actions
+      ================================= */}
 
             <section className="container quick-section">
 
-                <h2>Quick Actions</h2>
+
+                <h2>
+                    Quick Actions
+                </h2>
+
 
                 <div className="quick-actions">
 
-                    <Link to="/employees/add" className="quick-card">
+
+                    {/* Add Employee */}
+
+                    <Link
+                        to="/employees/add"
+                        className="quick-card"
+                    >
+
                         <FaPlus />
+
+
                         <div>
-                            <h3>Add Employee</h3>
-                            <p>Add a new employee</p>
+
+                            <h3>
+                                Add Employee
+                            </h3>
+
+                            <p>
+                                Add a new employee
+                            </p>
+
                         </div>
+
                     </Link>
 
-                    <Link to="/employees" className="quick-card">
+
+
+                    {/* Manage Employees */}
+
+                    <Link
+                        to="/employees"
+                        className="quick-card"
+                    >
+
                         <FaUsers />
+
+
                         <div>
-                            <h3>Manage Employees</h3>
-                            <p>View and manage employees</p>
+
+                            <h3>
+                                Manage Employees
+                            </h3>
+
+                            <p>
+                                View and manage employees
+                            </p>
+
                         </div>
+
                     </Link>
 
-                    <Link to="/departments" className="quick-card">
+
+
+                    {/* Departments */}
+
+                    <Link
+                        to="/departments"
+                        className="quick-card"
+                    >
+
                         <FaBuilding />
+
+
                         <div>
-                            <h3>Departments</h3>
-                            <p>Manage departments</p>
+
+                            <h3>
+                                Departments
+                            </h3>
+
+                            <p>
+                                Manage departments
+                            </p>
+
                         </div>
+
                     </Link>
+
 
                 </div>
 
             </section>
+
 
         </main>
     );
