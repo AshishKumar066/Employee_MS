@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import {
     FaUsers,
     FaUserCheck,
@@ -14,41 +13,24 @@ import { useEffect, useState } from "react";
 import StatCard from "../components/StateCard";
 
 import { getEmployees } from "../data/employeeStorage";
-
-
 function Home() {
-
     // Employee State
-   
     const [employees, setEmployees] = useState([]);
-
     // Load Employees
-
     useEffect(() => {
-
         const data = getEmployees();
-
         setEmployees(data);
-
     }, []);
 
     // Dynamic Statistics
-   
     // Total Employees
-
     const totalEmployees = employees.length;
-
-
     // Active Employees
-
     const activeEmployees = employees.filter(
         (employee) =>
             employee.status === "Active"
     ).length;
-
-
     // On Leave Employees
-
     const onLeaveEmployees = employees.filter(
         (employee) =>
             employee.status === "On Leave"
